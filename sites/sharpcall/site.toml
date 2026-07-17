@@ -2,13 +2,18 @@
 
 webhook_url = "https://sharpcall.ai/api/lazyblog"
 author = "SharpCall Team"
-model = "anthropic/claude-sonnet-4.5"
+model = "anthropic/claude-sonnet-5"
 publish_hour = 9
 
 # Off until the prompt is tuned: read the first few drafts, then flip it. A burst
 # of unreviewed AI posts is a spam signal to Google, and this site is trying to
 # rank, not to fill a feed.
 auto_send = false
+
+# prompt.md asks for faqs, so a draft without them is a failure, not a post. The
+# page renders an FAQ block from this field; without it a weaker model dumps the
+# Q&A into the body as raw <faq> tags and the block silently renders empty.
+required = ["title", "description", "body", "faqs"]
 
 # Fallback link targets. Most topics set their own industry page in topics.csv.
 sources = [

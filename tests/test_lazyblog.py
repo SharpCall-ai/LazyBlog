@@ -271,6 +271,31 @@ def test_generate_refuses_an_incomplete_response(site: config.Site, openrouter) 
     assert topics_mod.read(site)[0]["status"] == topics_mod.PENDING
 
 
+def test_required_rejects_a_field_the_model_dropped(site: config.Site, openrouter) -> None:
+    """A weak model answers the schema in prose: full body, no faqs. That draft must
+    not become a page with the Q&A stranded in the body as raw tags."""
+    site.required = ["title", "description", "body", "faqs"]
+    openrouter.content = json.dumps(
+        {**POST_JSON, "faqs": None, "body": "## Real body\n\n<faq><q>Q?</q><a>A.</a></faq>"}
+    )
+    topics_mod.add(site, "Faqless topic")
+
+    with pytest.raises(LazyBlogError, match="faqs"):
+        generate.generate(site)
+
+    # Nothing written, topic still claimable on the next run.
+    assert not list(site.drafts_dir.glob("*.md")) if site.drafts_dir.exists() else True
+    assert topics_mod.read(site)[0]["status"] == topics_mod.PENDING
+
+
+def test_required_defaults_do_not_demand_faqs(site: config.Site, openrouter) -> None:
+    """Sites that never asked for faqs must not start failing."""
+    openrouter.content = json.dumps({**POST_JSON, "faqs": None})
+    topics_mod.add(site, "No faqs wanted")
+
+    assert generate.generate(site).exists()
+
+
 def test_generate_reports_non_json(site: config.Site, openrouter) -> None:
     openrouter.content = "Sure! Here's your blog post about widgets."
     topics_mod.add(site, "Chatty topic")

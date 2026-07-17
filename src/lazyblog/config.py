@@ -23,10 +23,15 @@ class Site:
     dir: Path
     webhook_url: str
     author: str
-    model: str = "anthropic/claude-sonnet-4.5"
+    model: str = "anthropic/claude-sonnet-5"
     publish_hour: int = 9
     auto_send: bool = True
     sources: list[str] = field(default_factory=list)
+    # Keys the model's JSON must contain, or the draft is rejected. Add the ones your
+    # prompt.md asks for: a weaker model will quietly drop a field and answer in prose
+    # instead, and an unchecked draft becomes a page with the field's content stranded
+    # in the body as junk.
+    required: list[str] = field(default_factory=lambda: ["title", "description", "body"])
 
     @property
     def prompt_path(self) -> Path:

@@ -9,7 +9,7 @@ author = "Example Team"
 
 # Any OpenRouter model. Check the slug at https://openrouter.ai/models before
 # the first run — a wrong slug fails fast with a 400.
-model = "anthropic/claude-sonnet-4.5"
+model = "anthropic/claude-sonnet-5"
 
 # Hour of day (0-23, container local time) the daemon publishes. One post per day.
 publish_hour = 9

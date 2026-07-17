@@ -20,7 +20,6 @@ from .markdown import compose, read_time, slugify
 OPENROUTER_URL = os.getenv(
     "OPENROUTER_URL", "https://openrouter.ai/api/v1/chat/completions"
 )
-REQUIRED_FIELDS = ("title", "description", "body")
 TIMEOUT = 300
 
 
@@ -71,9 +70,13 @@ def _ask_model(site: Site, row: dict[str, str]) -> dict:
 
     raw = _post_chat(site.model, site.prompt(), "\n\n".join(instructions))
     post = _parse_json(raw)
-    missing = [f for f in REQUIRED_FIELDS if not post.get(f)]
+    missing = [f for f in site.required if not post.get(f)]
     if missing:
-        raise LazyBlogError(f"model response is missing {missing}; check {site.prompt_path}")
+        raise LazyBlogError(
+            f"model response is missing {missing}. Either {site.model} ignored the "
+            f"schema in {site.prompt_path} (try a stronger model), or drop the field "
+            f"from `required` in {site.dir / 'site.toml'}."
+        )
     return post
 
 
