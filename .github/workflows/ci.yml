@@ -85,7 +85,11 @@ jobs:
       - name: Verify the manifest serves amd64 + arm64
         run: |
           set -euo pipefail
-          image="ghcr.io/${{ github.repository_owner }}/lazyblog@${{ steps.build.outputs.digest }}"
+          # GHCR paths must be lowercase; a GitHub owner does not have to be.
+          # metadata-action lowercases its own output, so anything hand-rolled here
+          # has to do it too.
+          owner=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+          image="ghcr.io/${owner}/lazyblog@${{ steps.build.outputs.digest }}"
           echo "Inspecting ${image}"
           docker buildx imagetools inspect "${image}" | tee /tmp/manifest.txt
           for want in linux/amd64 linux/arm64; do
