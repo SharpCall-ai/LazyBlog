@@ -321,8 +321,10 @@ def test_payload_refuses_a_traversing_slug(site: config.Site) -> None:
 class _Receiver(BaseHTTPRequestHandler):
     status = 200
     received: list[dict] = []
+    hits = 0  # every POST, including ones rejected for a bad signature
 
     def do_POST(self) -> None:  # noqa: N802 - BaseHTTPRequestHandler's API
+        type(self).hits += 1
         body = self.rfile.read(int(self.headers["Content-Length"]))
         expected = hmac.new(SECRET.encode(), body, hashlib.sha256).hexdigest()
         signature = self.headers.get(deliver.SIGNATURE_HEADER, "")
@@ -341,6 +343,7 @@ class _Receiver(BaseHTTPRequestHandler):
 @pytest.fixture
 def receiver(site: config.Site):
     _Receiver.received = []
+    _Receiver.hits = 0
     _Receiver.status = 200
     server = HTTPServer(("127.0.0.1", 0), _Receiver)
     threading.Thread(target=server.serve_forever, daemon=True).start()
@@ -364,9 +367,14 @@ def test_wrong_secret_is_rejected_and_not_retried(
     slug = _draft(site)
     monkeypatch.setenv("LAZYBLOG_SECRET_DEMO", "wrong-secret")
 
-    with pytest.raises(LazyBlogError, match="401"):
+    with pytest.raises(LazyBlogError, match="401") as raised:
         deliver.send(site, slug)
+
     assert receiver.received == []
+    # A rejected signature will not fix itself: hammering it 3x is pointless, and
+    # the error must not claim attempts it never made.
+    assert receiver.hits == 1
+    assert "after 1 attempt " in str(raised.value)
     assert topics_mod.read(site)[0]["status"] == topics_mod.DRAFTED
 
 

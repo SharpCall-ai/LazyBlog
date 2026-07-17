@@ -1,0 +1,17 @@
+# SharpCall.ai — AI receptionist for Canadian small businesses.
+
+webhook_url = "https://sharpcall.ai/api/lazyblog"
+author = "SharpCall Team"
+model = "anthropic/claude-sonnet-4.5"
+publish_hour = 9
+
+# Off until the prompt is tuned: read the first few drafts, then flip it. A burst
+# of unreviewed AI posts is a spam signal to Google, and this site is trying to
+# rank, not to fill a feed.
+auto_send = false
+
+# Fallback link targets. Most topics set their own industry page in topics.csv.
+sources = [
+  "https://sharpcall.ai/solutions",
+  "https://sharpcall.ai/#pricing",
+]

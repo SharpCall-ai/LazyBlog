@@ -59,7 +59,9 @@ def send(site: Site, slug: str) -> None:
     )
 
     last = ""
+    tried = 0
     for attempt in range(1, ATTEMPTS + 1):
+        tried = attempt
         try:
             with urllib.request.urlopen(request, timeout=TIMEOUT) as response:
                 if 200 <= response.status < 300:
@@ -75,8 +77,9 @@ def send(site: Site, slug: str) -> None:
         if attempt < ATTEMPTS:
             time.sleep(2**attempt)
 
+    attempts = f"{tried} attempt{'s' if tried > 1 else ''}"
     raise LazyBlogError(
-        f"delivery of '{slug}' to {site.webhook_url} failed after {ATTEMPTS} attempts ({last}). "
+        f"delivery of '{slug}' to {site.webhook_url} failed after {attempts} ({last}). "
         f"The draft is still at {site.drafts_dir / f'{slug}.md'} — rerun `lazyblog send`."
     )
 
