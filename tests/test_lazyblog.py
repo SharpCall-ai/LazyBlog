@@ -16,7 +16,9 @@ from pathlib import Path
 import pytest
 import yaml
 
-from lazyblog import LazyBlogError, config, deliver, generate, markdown
+from datetime import datetime
+
+from lazyblog import LazyBlogError, cli, config, deliver, generate, markdown
 from lazyblog import topics as topics_mod
 
 SECRET = "test-secret"
@@ -52,6 +54,14 @@ def test_site_name_cannot_traverse(monkeypatch: pytest.MonkeyPatch) -> None:
         config.load("../../etc")
 
 
+@pytest.mark.parametrize("url", ["file:///etc/passwd", "ftp://x/y", "/just/a/path"])
+def test_webhook_url_must_be_http(site: config.Site, url: str) -> None:
+    """urlopen accepts file:// and ftp://. A typo must not become a filesystem write."""
+    (site.dir / "site.toml").write_text(f'webhook_url = "{url}"\nauthor = "A"\n')
+    with pytest.raises(LazyBlogError, match="must be http"):
+        config.load("demo")
+
+
 def test_missing_secret_names_the_variable(site: config.Site, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.delenv("LAZYBLOG_SECRET_DEMO")
     with pytest.raises(LazyBlogError, match="LAZYBLOG_SECRET_DEMO"):
@@ -68,10 +78,13 @@ def test_topics_round_trip(site: config.Site) -> None:
     rows = topics_mod.read(site)
     assert [r["topic"] for r in rows] == ["First topic", "Second topic"]
     assert topics_mod.source_list(rows[0], site) == ["https://a.com", "https://b.com"]
-    assert topics_mod.next_pending(site)["topic"] == "First topic"
+
+    first = topics_mod.next_pending(site)
+    assert first is not None and first["topic"] == "First topic"
 
     topics_mod.set_status(site, "First topic", topics_mod.DRAFTED, "first-topic")
-    assert topics_mod.next_pending(site)["topic"] == "Second topic"
+    second = topics_mod.next_pending(site)
+    assert second is not None and second["topic"] == "Second topic"
     assert topics_mod.read(site)[0]["slug"] == "first-topic"
 
 
@@ -186,8 +199,8 @@ class _OpenRouter(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(reply)
 
-    def log_message(self, *_: object) -> None:
-        pass
+    def log_message(self, format: str, *args: object) -> None:  # noqa: A002
+        pass  # silence the per-request stderr spam
 
 
 @pytest.fixture
@@ -309,6 +322,53 @@ def test_generate_on_empty_queue(site: config.Site, openrouter) -> None:
         generate.generate(site)
 
 
+# --- daemon ---------------------------------------------------------------
+
+
+def test_tick_survives_a_broken_site_toml(site: config.Site, capsys) -> None:
+    """A typo mid-edit must not kill a daemon that is meant to run for months."""
+    (site.dir / "site.toml").write_text('webhook_url = "http://x/h"\nauthor = "A"\nnope = 1\n')
+
+    cli._tick()  # must not raise
+
+    assert "unknown keys" in capsys.readouterr().err
+
+
+def test_tick_survives_a_site_that_explodes(
+    site: config.Site, monkeypatch: pytest.MonkeyPatch, capsys
+) -> None:
+    """generate() raising something that is not a LazyBlogError must not kill the loop,
+    and the site must still be marked so it does not retry all day."""
+    monkeypatch.setattr(cli, "run", _boom)
+    monkeypatch.setattr(cli, "_today", lambda: "2026-07-17")
+    (site.dir / "site.toml").write_text(
+        f'webhook_url = "http://x/h"\nauthor = "A"\npublish_hour = {datetime.now().hour}\n'
+    )
+
+    cli._tick()  # must not raise
+
+    assert "kaboom" in capsys.readouterr().err
+    assert site.last_run_path.read_text() == "2026-07-17"
+
+
+def _boom(_site: config.Site) -> None:
+    raise RuntimeError("kaboom")
+
+
+def test_tick_skips_a_site_outside_its_publish_hour(
+    site: config.Site, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr(cli, "run", _boom)  # would raise if it ran
+    wrong_hour = (datetime.now().hour + 1) % 24
+    (site.dir / "site.toml").write_text(
+        f'webhook_url = "http://x/h"\nauthor = "A"\npublish_hour = {wrong_hour}\n'
+    )
+
+    cli._tick()
+
+    assert not site.last_run_path.exists()
+
+
 # --- delivery -------------------------------------------------------------
 
 
@@ -361,8 +421,8 @@ class _Receiver(BaseHTTPRequestHandler):
         self.send_response(type(self).status)
         self.end_headers()
 
-    def log_message(self, *_: object) -> None:
-        pass
+    def log_message(self, format: str, *args: object) -> None:  # noqa: A002
+        pass  # silence the per-request stderr spam
 
 
 @pytest.fixture

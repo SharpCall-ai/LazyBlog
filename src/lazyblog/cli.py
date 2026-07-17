@@ -82,18 +82,40 @@ def cmd_daemon(_: argparse.Namespace) -> None:
     """
     print(f"lazyblog {__version__} daemon — checking every {TICK_SECONDS}s", flush=True)
     while True:
-        for site in config.all_sites():
+        _tick()
+        time.sleep(TICK_SECONDS)
+
+
+def _tick() -> None:
+    """One pass over every site. Must never raise: this runs unattended for months.
+
+    Nothing in here is worth dying for. A typo in a site.toml, a full disk, an LLM
+    that 500s - all are things a human fixes tomorrow, and none should take the other
+    sites down with them or leave the container restart-looping.
+    """
+    try:
+        sites = config.all_sites()
+    except LazyBlogError as exc:
+        # Someone is mid-edit in site.toml. Complain, look again in 5 minutes.
+        print(f"[config] {exc}", file=sys.stderr, flush=True)
+        return
+
+    for site in sites:
+        try:
             if datetime.now().hour != site.publish_hour:
                 continue
             if site.last_run_path.exists() and site.last_run_path.read_text() == _today():
                 continue
             try:
                 run(site)
-            except LazyBlogError as exc:
-                # A queue that is empty today should not stop the site running tomorrow.
+            except Exception as exc:  # noqa: BLE001 - see the docstring
+                # An empty queue today must not stop this site running tomorrow.
                 print(f"[{site.name}] {exc}", file=sys.stderr, flush=True)
+            # Marked even on failure: one attempt per day, not a retry storm against
+            # a paid API. `lazyblog run <site>` forces one by hand.
             site.last_run_path.write_text(_today())
-        time.sleep(TICK_SECONDS)
+        except OSError as exc:
+            print(f"[{site.name}] {exc}", file=sys.stderr, flush=True)
 
 
 def _today() -> str:

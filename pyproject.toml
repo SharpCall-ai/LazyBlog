@@ -22,4 +22,14 @@ build-backend = "uv_build"
 module-name = "lazyblog"
 
 [dependency-groups]
-dev = ["pytest>=8.0"]
+dev = ["pytest>=8.0", "types-PyYAML>=6.0"]
+
+[tool.pyright]
+# Without these an editor's language server resolves nothing from the project venv
+# and reports every import as missing.
+venvPath = "."
+venv = ".venv"
+include = ["src", "tests"]
+
+[tool.ruff]
+line-length = 92

@@ -7,6 +7,7 @@ import re
 import tomllib
 from dataclasses import dataclass, field
 from pathlib import Path
+from urllib.parse import urlparse
 
 from . import LazyBlogError
 
@@ -79,9 +80,17 @@ def load(name: str) -> Site:
     if unknown:
         raise LazyBlogError(f"{config_path}: unknown keys {sorted(unknown)}")
 
-    for required in ("webhook_url", "author"):
-        if not data.get(required):
-            raise LazyBlogError(f"{config_path}: '{required}' is required")
+    for key in ("webhook_url", "author"):
+        if not data.get(key):
+            raise LazyBlogError(f"{config_path}: '{key}' is required")
+
+    # urlopen will happily accept file:// or ftp://. A typo here should be a config
+    # error, not an attempt to POST a blog post at the local filesystem.
+    scheme = urlparse(str(data["webhook_url"])).scheme
+    if scheme not in ("http", "https"):
+        raise LazyBlogError(
+            f"{config_path}: webhook_url must be http(s), got {scheme or 'no'} scheme"
+        )
 
     data.pop("name", None)
     data.pop("dir", None)

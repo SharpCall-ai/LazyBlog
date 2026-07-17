@@ -22,7 +22,15 @@ jobs:
           enable-cache: true
 
       - run: uv sync --frozen
-      - run: uv run pytest -q
+
+      - name: Lint
+        run: uvx ruff check src tests
+
+      - name: Type check
+        run: uvx pyright
+
+      - name: Tests
+        run: uv run pytest -q
 
   publish:
     # Never publish a broken image, and never publish from a fork's pull request.
@@ -60,7 +68,8 @@ jobs:
             type=semver,pattern={{major}}.{{minor}}
             type=sha,format=short
 
-      - uses: docker/build-push-action@v7
+      - id: build
+        uses: docker/build-push-action@v7
         with:
           context: .
           platforms: linux/amd64,linux/arm64
@@ -69,3 +78,17 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      # Prove both architectures actually shipped. One prod server is arm64 and the
+      # other is x86; a manifest that quietly lost an arch fails at `docker pull` on
+      # the server, which is a rubbish place to find out.
+      - name: Verify the manifest serves amd64 + arm64
+        run: |
+          set -euo pipefail
+          image="ghcr.io/${{ github.repository_owner }}/lazyblog@${{ steps.build.outputs.digest }}"
+          echo "Inspecting ${image}"
+          docker buildx imagetools inspect "${image}" | tee /tmp/manifest.txt
+          for want in linux/amd64 linux/arm64; do
+            grep -q "$want" /tmp/manifest.txt || { echo "::error::manifest is missing $want"; exit 1; }
+            echo "ok: $want present"
+          done
