@@ -1,0 +1,25 @@
+[project]
+name = "lazyblog"
+version = "0.1.0"
+description = "Topic in a sheet, markdown post out, POSTed to your site. One container, no database."
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.11"
+dependencies = ["pyyaml>=6.0"]
+
+[project.scripts]
+lazyblog = "lazyblog.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/Gurkirat-Singh-bit/LazyBlog"
+Issues = "https://github.com/Gurkirat-Singh-bit/LazyBlog/issues"
+
+[build-system]
+requires = ["uv_build>=0.7"]
+build-backend = "uv_build"
+
+[tool.uv.build-backend]
+module-name = "lazyblog"
+
+[dependency-groups]
+dev = ["pytest>=8.0"]

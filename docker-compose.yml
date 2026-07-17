@@ -1,0 +1,31 @@
+# Runs the published multi-arch image — nothing builds on your machine.
+#
+#   docker compose pull && docker compose up -d      # daemon: one post per site per day
+#   docker compose run --rm lazyblog sites           # same CLI, any time
+#   docker compose logs -f
+#
+# Hacking on LazyBlog itself? Use docker-compose.dev.yml, which builds from source.
+#
+# No ports published: LazyBlog only makes outbound calls, so there is nothing to
+# expose and no reverse proxy to configure.
+
+services:
+  lazyblog:
+    # Override LAZYBLOG_IMAGE to run a fork or pin a version:
+    #   LAZYBLOG_IMAGE=ghcr.io/you/lazyblog:v0.1.0 docker compose up -d
+    image: ${LAZYBLOG_IMAGE:-ghcr.io/gurkirat-singh-bit/lazyblog:latest}
+    restart: unless-stopped
+    env_file:
+      # Optional: exporting the vars in your shell, or letting a platform inject
+      # them, works just as well as a .env file.
+      - path: .env
+        required: false
+    volumes:
+      # Bind-mounted, not a named volume: topics.csv and prompt.md are files you edit
+      # and commit. Keeping them in the repo is the whole point.
+      - ./sites:/app/sites
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"

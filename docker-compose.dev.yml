@@ -1,0 +1,15 @@
+# Builds from source instead of pulling. For working on LazyBlog itself.
+#
+#   docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d --build
+#
+# Overlays the base file, so it inherits the volume, env_file and logging config and
+# only replaces where the image comes from.
+
+services:
+  lazyblog:
+    build:
+      context: .
+      # Your machine's architecture only. CI publishes amd64 + arm64.
+      dockerfile: Dockerfile
+    image: lazyblog:dev
+    pull_policy: never

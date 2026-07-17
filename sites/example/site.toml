@@ -1,0 +1,26 @@
+# Copy this folder to sites/<yourname>/ and edit. Everything here gets committed,
+# so no secrets: the signing secret is read from LAZYBLOG_SECRET_<YOURNAME>.
+
+# Where the finished post is POSTed. Your endpoint, your rules.
+webhook_url = "http://localhost:3000/api/lazyblog"
+
+# Default byline. A topics.csv row can override it per post.
+author = "Example Team"
+
+# Any OpenRouter model. Check the slug at https://openrouter.ai/models before
+# the first run — a wrong slug fails fast with a 400.
+model = "anthropic/claude-sonnet-4.5"
+
+# Hour of day (0-23, container local time) the daemon publishes. One post per day.
+publish_hour = 9
+
+# false = drafts wait on disk for `lazyblog send`. Worth keeping while you tune
+# the prompt; a burst of unreviewed AI posts is a spam signal to Google.
+auto_send = false
+
+# Pages the model links to when they genuinely fit. These are link targets, not
+# research material — nothing is fetched.
+sources = [
+  "https://example.com/pricing",
+  "https://example.com/docs",
+]
