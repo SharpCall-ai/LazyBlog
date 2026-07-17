@@ -153,6 +153,8 @@ Images are published to `ghcr.io/gurkirat-singh-bit/lazyblog` for **linux/amd64 
 LAZYBLOG_IMAGE=ghcr.io/you/lazyblog:v0.1.0 docker compose up -d
 ```
 
+> **Forking?** GHCR makes a new package **private** on first publish, and `docker compose pull` will fail with a 401 until you change that. Repo → Packages → your package → *Package settings* → *Change visibility* → **Public**. It's a one-time click that no workflow permission can do for you. Keeping it private is fine too — then run `docker login ghcr.io` wherever you deploy.
+
 ## Development
 
 ```bash
