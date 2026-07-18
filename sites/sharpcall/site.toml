@@ -1,9 +1,24 @@
 # SharpCall.ai — AI receptionist for Canadian small businesses.
 
-webhook_url = "https://sharpcall.ai/api/lazyblog"
+# The container talks to the website container directly over dokploy-network, so
+# the post never leaves the host. This is not just tidier than the public URL:
+# Cloudflare answers https://sharpcall.ai/api/lazyblog with 403 (error 1010), so
+# delivery over the public hostname does not work at all.
+#
+# The name is Dokploy-generated. If it ever recreates the app, re-check it with
+# `docker service ls` or delivery fails silently.
+# Running LazyBlog off the server? Point this at a local receiver instead.
+webhook_url = "http://sharpcallai-sharpcallai-vv03mn:3000/api/lazyblog"
 author = "SharpCall Team"
-model = "anthropic/claude-sonnet-5"
-publish_hour = 9
+
+# A free model, because the current OpenRouter key has no credits. It is good
+# enough to check the pipeline and NOT good enough to publish: it invented a
+# Statistics Canada citation and made up SharpCall features on its first run.
+# Add credits and switch to anthropic/claude-sonnet-5 before auto_send goes on.
+model = "nvidia/nemotron-3-ultra-550b-a55b:free"
+# Two posts a day, container local time: one in the morning, one in the evening.
+# 50 queued topics at this rate is about 25 days of publishing.
+publish_hours = [9, 17]
 
 # Off until the prompt is tuned: read the first few drafts, then flip it. A burst
 # of unreviewed AI posts is a spam signal to Google, and this site is trying to

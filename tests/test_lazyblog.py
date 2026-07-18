@@ -68,6 +68,60 @@ def test_missing_secret_names_the_variable(site: config.Site, monkeypatch: pytes
         site.secret()
 
 
+# --- managing sites -------------------------------------------------------
+
+
+def test_set_field_changes_value_and_keeps_comments(site: config.Site) -> None:
+    (site.dir / "site.toml").write_text(
+        '# keep this comment\nwebhook_url = "http://x/hook"\nauthor = "A"\n'
+        "publish_hour = 9\nauto_send = false\n"
+    )
+    config.set_field("demo", "publish_hour", "17")
+    config.set_field("demo", "auto_send", "true")
+    config.set_field("demo", "webhook_url", "https://new.example/hook")
+
+    assert "# keep this comment" in (site.dir / "site.toml").read_text()
+    reloaded = config.load("demo")
+    assert reloaded.publish_hour == 17
+    assert reloaded.auto_send is True
+    assert reloaded.webhook_url == "https://new.example/hook"
+
+
+def test_set_field_rejects_lists_and_unknown_keys(site: config.Site) -> None:
+    with pytest.raises(LazyBlogError, match="list"):
+        config.set_field("demo", "sources", "https://a.com")
+    with pytest.raises(LazyBlogError, match="editable"):
+        config.set_field("demo", "nope", "x")
+
+
+def test_set_field_validates_the_result(site: config.Site) -> None:
+    with pytest.raises(LazyBlogError, match="must be http"):
+        config.set_field("demo", "webhook_url", "ftp://x/y")
+
+
+def test_create_and_remove_a_site(site: config.Site) -> None:
+    created = config.create("blog2", "https://blog2.example/hook", author="Me")
+    assert created.webhook_url == "https://blog2.example/hook"
+    assert created.author == "Me"
+    assert config.load("blog2").name == "blog2"  # persisted and valid
+
+    config.remove("blog2")
+    with pytest.raises(LazyBlogError, match="no site"):
+        config.load("blog2")
+
+
+def test_create_rejects_a_non_http_url_without_leaving_a_folder(site: config.Site) -> None:
+    with pytest.raises(LazyBlogError, match="http"):
+        config.create("blog3", "ftp://x/y")
+    assert not (config.sites_dir() / "blog3").exists()
+
+
+def test_new_secret_line_matches_the_env_convention(site: config.Site) -> None:
+    line = config.new_secret("my-blog")
+    assert line.startswith("LAZYBLOG_SECRET_MY_BLOG=")
+    assert len(line.split("=", 1)[1]) == 64  # token_hex(32)
+
+
 # --- topics ---------------------------------------------------------------
 
 
@@ -348,11 +402,68 @@ def test_tick_survives_a_site_that_explodes(
     cli._tick()  # must not raise
 
     assert "kaboom" in capsys.readouterr().err
-    assert site.last_run_path.read_text() == "2026-07-17"
+    assert site.last_run_path.read_text() == f"2026-07-17:{datetime.now().hour:02d}"
 
 
 def _boom(_site: config.Site) -> None:
     raise RuntimeError("kaboom")
+
+
+class _ClockAt:
+    """cli calls datetime.now(); datetime itself is immutable, so swap the name."""
+
+    def __init__(self, hour: int) -> None:
+        self._hour = hour
+
+    def now(self) -> datetime:
+        return datetime.now().replace(hour=self._hour)
+
+
+def test_two_posts_a_day_fire_in_both_slots_and_neither_twice(
+    site: config.Site, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """publish_hours = [9, 17] must give exactly one post per slot, morning and evening."""
+    (site.dir / "site.toml").write_text(
+        'webhook_url = "http://x/h"\nauthor = "A"\npublish_hours = [9, 17]\n'
+    )
+    monkeypatch.setattr(cli, "_today", lambda: "2026-07-18")
+    ran: list[str] = []
+    monkeypatch.setattr(cli, "run", lambda s: ran.append(s.name))
+
+    monkeypatch.setattr(cli, "datetime", _ClockAt(9))
+    cli._tick()
+    cli._tick()  # same slot, five minutes later: must not publish again
+    assert ran == ["demo"]
+    assert site.last_run_path.read_text() == "2026-07-18:09"
+
+    # The evening slot is a different marker, so it publishes a second post.
+    monkeypatch.setattr(cli, "datetime", _ClockAt(17))
+    cli._tick()
+    cli._tick()
+    assert ran == ["demo", "demo"]
+    assert site.last_run_path.read_text() == "2026-07-18:17"
+
+    # A third tick at an hour that is not a slot does nothing.
+    monkeypatch.setattr(cli, "datetime", _ClockAt(3))
+    cli._tick()
+    assert ran == ["demo", "demo"]
+
+
+def test_publish_hour_still_means_once_a_day(site: config.Site) -> None:
+    """Existing site.toml files that predate publish_hours must not change behaviour."""
+    (site.dir / "site.toml").write_text(
+        'webhook_url = "http://x/h"\nauthor = "A"\npublish_hour = 14\n'
+    )
+    assert config.load("demo").hours == [14]
+
+
+def test_a_bad_publish_hour_is_a_config_error(site: config.Site) -> None:
+    """Otherwise the daemon just silently never publishes."""
+    (site.dir / "site.toml").write_text(
+        'webhook_url = "http://x/h"\nauthor = "A"\npublish_hours = [9, 25]\n'
+    )
+    with pytest.raises(LazyBlogError, match="must be 0-23"):
+        config.load("demo")
 
 
 def test_tick_skips_a_site_outside_its_publish_hour(

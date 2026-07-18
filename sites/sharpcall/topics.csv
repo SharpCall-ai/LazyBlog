@@ -1,9 +1,72 @@
-topic,author,sources,status,slug
-How much does a missed call actually cost a restaurant?,,https://sharpcall.ai/solutions/restaurants;https://sharpcall.ai/#pricing,pending,
-AI receptionist vs. answering service: what small businesses actually get,,https://sharpcall.ai/solutions;https://sharpcall.ai/#pricing,pending,
-How salons cut no-shows with automated SMS reminders,,https://sharpcall.ai/solutions/salons-and-spas;https://sharpcall.ai/#pricing,pending,
-After-hours calls: what happens to plumbing leads at 2am,,https://sharpcall.ai/solutions/plumbing-and-hvac;https://sharpcall.ai/#pricing,pending,
-Speed to lead in real estate: why the first 5 minutes decide the deal,,https://sharpcall.ai/solutions/real-estate;https://sharpcall.ai/#pricing,pending,
-What to ask before buying an AI receptionist (a buyer's checklist),,https://sharpcall.ai/solutions;https://sharpcall.ai/#pricing,pending,
-How dental front desks handle call overflow without hiring,,https://sharpcall.ai/solutions/medical-and-dental;https://sharpcall.ai/#pricing,pending,
-PIPEDA and AI phone agents: what Canadian businesses need to know,,https://sharpcall.ai/solutions;https://sharpcall.ai/#pricing,pending,
+topic,author,sources,status,slug,cluster,intent,review
+What drives the price of an AI receptionist in Canada,Joe Saccomano,https://sharpcall.ai/#pricing;https://sharpcall.ai/solutions,pending,,cost-roi,commercial,standard
+AI receptionist vs answering service: what a small business actually gets,Joe Saccomano,https://sharpcall.ai/solutions;https://sharpcall.ai/#pricing,pending,,comparison,commercial,standard
+What to ask before buying an AI receptionist: a buyer's checklist,Joe Saccomano,https://sharpcall.ai/solutions;https://sharpcall.ai/#pricing,pending,,buyer-framework,commercial,standard
+Do AI receptionists actually work? An honest look,Dylan Court,https://sharpcall.ai/solutions;https://sharpcall.ai/#pricing,pending,,objections,informational,standard
+How much does a missed call actually cost a restaurant?,Dylan Court,https://sharpcall.ai/solutions/restaurants;https://sharpcall.ai/#pricing,pending,,vertical-restaurants,informational,standard
+AI phone answering for Quebec restaurants: reservations in French and English,Dylan Court,https://sharpcall.ai/solutions/restaurants,pending,,quebec-bilingual,commercial,standard
+How salons cut no-shows with better phone follow-up,Dylan Court,https://sharpcall.ai/solutions/salons-and-spas,pending,,vertical-salons,informational,standard
+How dental front desks handle call overflow without hiring,Dylan Court,https://sharpcall.ai/solutions/medical-and-dental;https://sharpcall.ai/#pricing,pending,,vertical-dental,commercial,standard
+After-hours calls: what happens to plumbing leads at 2am,Dylan Court,https://sharpcall.ai/solutions/plumbing-and-hvac;https://sharpcall.ai/#pricing,pending,,vertical-trades,commercial,standard
+Speed to lead in real estate: why the first five minutes decide the deal,Joe Saccomano,https://sharpcall.ai/solutions/real-estate;https://sharpcall.ai/#pricing,pending,,vertical-real-estate,commercial,standard
+Booking service appointments when the shop phone never stops,Dylan Court,https://sharpcall.ai/solutions/auto-services;https://sharpcall.ai/#pricing,pending,,vertical-auto,commercial,standard
+Client intake calls for small law and accounting firms,Joe Saccomano,https://sharpcall.ai/solutions/professional-services;https://sharpcall.ai/#pricing,pending,,vertical-professional,commercial,standard
+How to port a Canadian business number to a new phone system,Gurkirat Singh,https://sharpcall.ai/solutions,pending,,technical-setup,informational,standard
+Writing a phone greeting that does not sound like a robot,Dylan Court,https://sharpcall.ai/solutions,pending,,operations,informational,standard
+AI receptionist or a part-time receptionist: how to compare the real cost,Joe Saccomano,https://sharpcall.ai/#pricing,pending,,cost-roi,commercial,standard
+AI receptionist vs voicemail: why callers hang up on a recording,Dylan Court,https://sharpcall.ai/solutions,pending,,comparison,informational,standard
+Questions to ask a Canadian AI receptionist vendor before you sign,Joe Saccomano,https://sharpcall.ai/solutions;https://sharpcall.ai/#pricing,pending,,buyer-framework,commercial,standard
+Will customers hang up on an AI receptionist?,Dylan Court,https://sharpcall.ai/solutions,pending,,objections,informational,standard
+Taking reservations by phone during the dinner rush without losing tables,Dylan Court,https://sharpcall.ai/solutions/restaurants,pending,,vertical-restaurants,informational,standard
+Booking appointments while your hands are busy: phone coverage for stylists,Dylan Court,https://sharpcall.ai/solutions/salons-and-spas;https://sharpcall.ai/#pricing,pending,,vertical-salons,commercial,standard
+Appointment reminders and rescheduling for Canadian clinics,Dylan Court,https://sharpcall.ai/solutions/medical-and-dental,pending,,vertical-dental,informational,standard
+Answering the phone when you are under a sink: options for solo trades,Dylan Court,https://sharpcall.ai/solutions/plumbing-and-hvac,pending,,vertical-trades,informational,standard
+Handling listing enquiries while you are in a showing,Dylan Court,https://sharpcall.ai/solutions/real-estate,pending,,vertical-real-estate,informational,standard
+Quoting repairs over the phone: what to answer and what to defer,Dylan Court,https://sharpcall.ai/solutions/auto-services,pending,,vertical-auto,informational,standard
+Tax season phone overflow for Canadian accountants,Joe Saccomano,https://sharpcall.ai/solutions/professional-services,pending,,vertical-professional,commercial,standard
+"Call forwarding, ring groups and overflow: how call routing actually works",Gurkirat Singh,https://sharpcall.ai/solutions,pending,,technical-setup,informational,standard
+"What to capture on every inbound call, and what to skip",Dylan Court,https://sharpcall.ai/solutions,pending,,operations,informational,standard
+How to work out what missed calls are costing your business,Joe Saccomano,https://sharpcall.ai/solutions;https://sharpcall.ai/#pricing,pending,,cost-roi,informational,standard
+"Answering service, call centre or AI receptionist: which fits a small Canadian business",Joe Saccomano,https://sharpcall.ai/solutions;https://sharpcall.ai/#pricing,pending,,comparison,commercial,standard
+"What an AI receptionist cannot do, and when you still need a person",Dylan Court,https://sharpcall.ai/solutions,pending,,buyer-framework,informational,standard
+"Can AI replace a receptionist, or only the calls they cannot get to?",Dylan Court,https://sharpcall.ai/solutions,pending,,objections,informational,standard
+How restaurants handle takeout order calls when the kitchen is slammed,Dylan Court,https://sharpcall.ai/solutions/restaurants;https://sharpcall.ai/#pricing,pending,,vertical-restaurants,commercial,standard
+Handling cancellations and waitlists without stopping a service,Dylan Court,https://sharpcall.ai/solutions/salons-and-spas,pending,,vertical-salons,informational,standard
+"Phone coverage for a clinic at lunch, at capacity and after hours",Dylan Court,https://sharpcall.ai/solutions/medical-and-dental;https://sharpcall.ai/#pricing,pending,,vertical-dental,commercial,standard
+Emergency vs routine: sorting trades calls before they reach your phone,Dylan Court,https://sharpcall.ai/solutions/plumbing-and-hvac,pending,,vertical-trades,informational,standard
+Qualifying buyer and seller calls before they hit your calendar,Joe Saccomano,https://sharpcall.ai/solutions/real-estate,pending,,vertical-real-estate,commercial,standard
+Connecting your booking software to the phone line that feeds it,Gurkirat Singh,https://sharpcall.ai/solutions;https://sharpcall.ai/#pricing,pending,,technical-setup,commercial,standard
+How to measure whether your phone coverage is working,Joe Saccomano,https://sharpcall.ai/solutions;https://sharpcall.ai/#pricing,pending,,operations,informational,standard
+Is an AI receptionist worth it for a business with under ten staff?,Joe Saccomano,https://sharpcall.ai/#pricing;https://sharpcall.ai/solutions,pending,,cost-roi,commercial,standard
+Auto attendant vs AI receptionist: press one is not the same thing,Dylan Court,https://sharpcall.ai/solutions,pending,,comparison,informational,standard
+What happens when an AI receptionist does not understand the caller,Dylan Court and Gurkirat Singh,https://sharpcall.ai/solutions,pending,,objections,informational,standard
+Answering allergy and dietary questions on the phone: what to automate,Dylan Court,https://sharpcall.ai/solutions/restaurants,pending,,vertical-restaurants,informational,standard
+"What a spa should automate on the phone, and what it should never automate",Dylan Court,https://sharpcall.ai/solutions/salons-and-spas,pending,,vertical-salons,informational,standard
+Winter furnace season: handling a call surge without missing jobs,Dylan Court,https://sharpcall.ai/solutions/plumbing-and-hvac;https://sharpcall.ai/#pricing,pending,,vertical-trades,commercial,standard
+Making an AI receptionist work with the tools a Canadian clinic already uses,Dylan Court and Gurkirat Singh,https://sharpcall.ai/solutions/medical-and-dental;https://sharpcall.ai/solutions,pending,,technical-setup,commercial,standard
+Training your team to work alongside an AI that answers first,Dylan Court,https://sharpcall.ai/solutions,pending,,operations,informational,standard
+"Per-minute, per-call or flat rate: answering service pricing models explained",Joe Saccomano,https://sharpcall.ai/#pricing,pending,,cost-roi,commercial,standard
+Switching from a traditional answering service: what actually changes,Joe Saccomano,https://sharpcall.ai/solutions;https://sharpcall.ai/#pricing,pending,,comparison,transactional,standard
+How HVAC companies lose booked jobs to whoever answers first,Joe Saccomano,https://sharpcall.ai/solutions/plumbing-and-hvac;https://sharpcall.ai/#pricing,pending,,vertical-trades,commercial,standard
+Blocking spam and robocalls before they reach your team,Gurkirat Singh,https://sharpcall.ai/solutions,pending,,technical-setup,informational,standard
+"What after-hours phone coverage actually costs, and the cheaper options",Joe Saccomano and Dylan Court,https://sharpcall.ai/#pricing;https://sharpcall.ai/solutions,pending,,cost-roi,commercial,standard
+What a good call handoff to a human sounds like,Dylan Court,https://sharpcall.ai/solutions,pending,,technical-setup,informational,standard
+The hidden cost of a front desk that is always on the phone,Dylan Court,https://sharpcall.ai/solutions,pending,,cost-roi,informational,standard
+Setting up escalation rules so urgent calls always reach someone,Gurkirat Singh,https://sharpcall.ai/solutions,pending,,technical-setup,informational,standard
+Does Jobber's AI receptionist cover a Canadian trades business?,Joe Saccomano,https://sharpcall.ai/solutions/plumbing-and-hvac;https://sharpcall.ai/#pricing,pending,,competitor-bundled,commercial,competitor
+Does your phone system already answer calls for you? Checking before you buy,Joe Saccomano,https://sharpcall.ai/solutions;https://sharpcall.ai/#pricing,pending,,competitor-bundled,commercial,competitor
+Bundled AI answering vs a dedicated receptionist: where bundles fall short,Joe Saccomano,https://sharpcall.ai/solutions/plumbing-and-hvac;https://sharpcall.ai/#pricing,pending,,competitor-bundled,commercial,competitor
+Is it legal to use an AI receptionist in Canada? Inbound vs outbound rules,Joe Saccomano,https://sharpcall.ai/solutions;https://sharpcall.ai/#pricing,pending,,canadian-compliance,informational,legal
+Quebec Bill 96 and your phone line: why French coverage is now a legal question,Joe Saccomano,https://sharpcall.ai/solutions;https://sharpcall.ai/#pricing,pending,,quebec-bilingual,commercial,legal
+Triaging a dental emergency call: what an AI should and should not decide,Dylan Court and Gurkirat Singh,https://sharpcall.ai/solutions/medical-and-dental,pending,,vertical-dental,informational,legal
+Confidentiality on the first call: intake for professional practices,Dylan Court and Gurkirat Singh,https://sharpcall.ai/solutions/professional-services,pending,,vertical-professional,informational,legal
+PIPEDA and AI phone answering: what Canadian business owners are responsible for,Joe Saccomano,https://sharpcall.ai/solutions,pending,,canadian-compliance,informational,legal
+PHIPA and Ontario clinics: what to ask before an AI answers patient calls,Dylan Court,https://sharpcall.ai/solutions/medical-and-dental,pending,,canadian-compliance,commercial,legal
+Recording business calls in Canada: consent and what your greeting must say,Gurkirat Singh,https://sharpcall.ai/solutions,pending,,canadian-compliance,informational,legal
+Do you have to tell callers they are speaking to an AI in Canada?,Dylan Court,https://sharpcall.ai/solutions,pending,,canadian-compliance,informational,legal
+Quebec Law 25: what it means for the caller data your phone system collects,Joe Saccomano,https://sharpcall.ai/solutions,pending,,canadian-compliance,informational,legal
+Where does your caller data live? Canadian data residency for phone AI,Dylan Court and Gurkirat Singh,https://sharpcall.ai/solutions,pending,,canadian-compliance,commercial,legal
+CRTC calling rules: what applies to answering calls versus making them,Gurkirat Singh,https://sharpcall.ai/solutions,pending,,canadian-compliance,informational,legal
+A privacy checklist for adding an AI receptionist to a Canadian business,Joe Saccomano,https://sharpcall.ai/solutions;https://sharpcall.ai/#pricing,pending,,canadian-compliance,commercial,legal
+AI receptionists in Ontario: the rules a local business should know,Dylan Court,https://sharpcall.ai/solutions;https://sharpcall.ai/#pricing,pending,,canadian-compliance,commercial,legal
+AI receptionists in Alberta: what applies to a local business,Dylan Court,https://sharpcall.ai/solutions;https://sharpcall.ai/#pricing,pending,,canadian-compliance,commercial,legal

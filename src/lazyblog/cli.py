@@ -48,6 +48,32 @@ def _split_pair(pair: str) -> tuple[str, str]:
     return key.strip(), value.strip()
 
 
+def cmd_new(args: argparse.Namespace) -> None:
+    site = config.create(args.name, args.url, args.author or "", args.model or "")
+    print(f"created {site.dir}/  — edit prompt.md, then `lazyblog topics {site.name} add \"...\"`")
+    print("add this signing secret to .env (never commit it):")
+    print(f"  {config.new_secret(site.name)}")
+
+
+def cmd_rm(args: argparse.Namespace) -> None:
+    directory = config.sites_dir() / args.name
+    if not args.force:
+        reply = input(f"delete {directory}/ and every draft in it? [y/N] ")
+        if reply.strip().lower() not in ("y", "yes"):
+            print("aborted")
+            return
+    print(f"removed {config.remove(args.name)}/  — also drop {config.secret_var(args.name)} from .env")
+
+
+def cmd_set(args: argparse.Namespace) -> None:
+    config.set_field(args.site, args.key, args.value)
+    print(f"{args.site}: {args.key} = {args.value}")
+
+
+def cmd_secret(args: argparse.Namespace) -> None:
+    print(config.new_secret(args.name))
+
+
 def cmd_generate(args: argparse.Namespace) -> None:
     draft = generate(config.load(args.site))
     print(draft)
@@ -102,18 +128,22 @@ def _tick() -> None:
 
     for site in sites:
         try:
-            if datetime.now().hour != site.publish_hour:
+            hour = datetime.now().hour
+            if hour not in site.hours:
                 continue
-            if site.last_run_path.exists() and site.last_run_path.read_text() == _today():
+            # The marker is the slot, not the day, so a site publishing at 9 and 17
+            # gets both and neither fires twice.
+            slot = f"{_today()}:{hour:02d}"
+            if site.last_run_path.exists() and site.last_run_path.read_text() == slot:
                 continue
             try:
                 run(site)
             except Exception as exc:  # noqa: BLE001 - see the docstring
-                # An empty queue today must not stop this site running tomorrow.
+                # An empty queue now must not stop this site running at the next slot.
                 print(f"[{site.name}] {exc}", file=sys.stderr, flush=True)
-            # Marked even on failure: one attempt per day, not a retry storm against
+            # Marked even on failure: one attempt per slot, not a retry storm against
             # a paid API. `lazyblog run <site>` forces one by hand.
-            site.last_run_path.write_text(_today())
+            site.last_run_path.write_text(slot)
         except OSError as exc:
             print(f"[{site.name}] {exc}", file=sys.stderr, flush=True)
 
@@ -128,6 +158,28 @@ def build_parser() -> argparse.ArgumentParser:
     sub = parser.add_subparsers(dest="command", required=True)
 
     sub.add_parser("sites", help="list configured sites").set_defaults(func=cmd_sites)
+
+    new = sub.add_parser("new", help="scaffold a new site folder")
+    new.add_argument("name")
+    new.add_argument("--url", required=True, help="webhook_url posts are delivered to")
+    new.add_argument("--author", help="default byline")
+    new.add_argument("--model", help="OpenRouter model slug")
+    new.set_defaults(func=cmd_new)
+
+    rm = sub.add_parser("rm", help="delete a site folder")
+    rm.add_argument("name")
+    rm.add_argument("--force", action="store_true", help="skip the confirmation prompt")
+    rm.set_defaults(func=cmd_rm)
+
+    set_cmd = sub.add_parser("set", help="edit a site.toml value (keeps comments)")
+    set_cmd.add_argument("site")
+    set_cmd.add_argument("key", help="webhook_url, author, model, publish_hour, auto_send")
+    set_cmd.add_argument("value")
+    set_cmd.set_defaults(func=cmd_set)
+
+    secret_cmd = sub.add_parser("secret", help="print a signing-secret line for .env")
+    secret_cmd.add_argument("name")
+    secret_cmd.set_defaults(func=cmd_secret)
 
     topics = sub.add_parser("topics", help="show or add topics")
     topics.add_argument("site")

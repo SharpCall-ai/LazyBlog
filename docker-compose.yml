@@ -1,6 +1,6 @@
 # Runs the published multi-arch image — nothing builds on your machine.
 #
-#   docker compose pull && docker compose up -d      # daemon: one post per site per day
+#   docker compose pull && docker compose up -d      # daemon: publishes at each publish hour
 #   docker compose run --rm lazyblog sites           # same CLI, any time
 #   docker compose logs -f
 #

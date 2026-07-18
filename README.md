@@ -32,7 +32,7 @@ docker compose run --rm lazyblog generate mysite    # -> sites/mysite/drafts/<sl
 docker compose run --rm lazyblog send mysite <slug> # -> POST to your webhook
 ```
 
-Happy with the drafts? Set `auto_send = true`, then `docker compose up -d` and it posts one article a day at `publish_hour`, forever.
+Happy with the drafts? Set `auto_send = true`, then `docker compose up -d` and it posts an article at `publish_hour`, forever. For more than one a day, set `publish_hours = [9, 17]` instead.
 
 ## Commands
 
@@ -44,7 +44,7 @@ Happy with the drafts? Set `auto_send = true`, then `docker compose up -d` and i
 | `lazyblog generate <site>` | draft the first pending topic |
 | `lazyblog send <site> <slug>` | POST a draft to the webhook |
 | `lazyblog run <site>` | generate, then send if `auto_send` |
-| `lazyblog daemon` | one post per site per day (the container's job) |
+| `lazyblog daemon` | one post per site per publish hour (the container's job) |
 
 This CLI is also the agent interface. Agents have a shell — there's no API to learn, no key to mint, no dashboard to log into.
 
