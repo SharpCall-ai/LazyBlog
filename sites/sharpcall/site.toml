@@ -23,7 +23,7 @@ publish_hours = [9, 17]
 # Off until the prompt is tuned: read the first few drafts, then flip it. A burst
 # of unreviewed AI posts is a spam signal to Google, and this site is trying to
 # rank, not to fill a feed.
-auto_send = false
+auto_send = true
 
 # prompt.md asks for faqs, so a draft without them is a failure, not a post. The
 # page renders an FAQ block from this field; without it a weaker model dumps the
