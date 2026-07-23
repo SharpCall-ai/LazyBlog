@@ -1,31 +1,37 @@
-# Runs the published multi-arch image — nothing builds on your machine.
+# DEPLOY-SPECIFIC compose for the SharpCall Dokploy host. Do NOT merge into the
+# OSS repo's compose — it runs as root and joins Dokploy's swarm overlay, neither
+# of which a vanilla `docker compose up` wants. The generic compose lives on the
+# personal repo's main.
 #
 #   docker compose pull && docker compose up -d      # daemon: publishes at each publish hour
 #   docker compose run --rm lazyblog sites           # same CLI, any time
 #   docker compose logs -f
-#
-# Hacking on LazyBlog itself? Use docker-compose.dev.yml, which builds from source.
-#
-# No ports published: LazyBlog only makes outbound calls, so there is nothing to
-# expose and no reverse proxy to configure.
 
 services:
   lazyblog:
-    # Override LAZYBLOG_IMAGE to run a fork or pin a version:
-    #   LAZYBLOG_IMAGE=ghcr.io/you/lazyblog:v0.1.0 docker compose up -d
     image: ${LAZYBLOG_IMAGE:-ghcr.io/gurkirat-singh-bit/lazyblog:latest}
     restart: unless-stopped
+    # Dokploy clones the bind-mounted sites/ as root; the image's non-root
+    # `lazyblog` user then can't create drafts/ or .last_run in the mount. Run as
+    # root so the daemon can write. (ponytail: blunt but survives every redeploy;
+    # the tidy alternative is an entrypoint that chowns the mount then drops priv,
+    # which needs an image rebuild.)
+    user: "0:0"
     env_file:
-      # Optional: exporting the vars in your shell, or letting a platform inject
-      # them, works just as well as a .env file.
       - path: .env
         required: false
     volumes:
-      # Bind-mounted, not a named volume: topics.csv and prompt.md are files you edit
-      # and commit. Keeping them in the repo is the whole point.
       - ./sites:/app/sites
+    # The delivery target (the website) is a swarm service on dokploy-network.
+    # Without joining it, the webhook host does not resolve ([Errno -3]).
+    networks:
+      - dokploy-network
     logging:
       driver: json-file
       options:
         max-size: "10m"
         max-file: "3"
+
+networks:
+  dokploy-network:
+    external: true
